@@ -44,3 +44,49 @@
   (λ (int_string)
     (let ([intstringlist (int_string->list int_string)])
       (inverse-captcha-helper intstringlist (list (car intstringlist)) 0))))
+
+;; Part Two:
+
+;; Now, instead of considering the next digit, it wants you to consider the digit "halfway around the circular list"
+;; If your list contains 10 items, only include a digit in your sum if the digit 10/2 = 5 steps forward matches it.
+;; Fortunately, your list has an even number of elements.
+
+;; For example:
+
+;; - 1212 produces 6, all four digits match the digit 2 items ahead.
+;; - 1221 produces 0, every comparison is between 1 and a 2.
+;; - 123425 produces 4, because both 2s match each other.
+;; - 123123 produces 12.
+;; - 12131415 produces 4.
+
+(define str->number
+  ;; Converts a character in in [#\0-#\9] to an integer [0-9]
+  (λ (char)
+    (- (char->integer char) 48)))
+
+(define inverse-captcha2-helper
+  (λ (input_string current_number total_length output)
+    (cond
+      ((equal? current_number (sub1 total_length))
+       (cond
+         ((equal?
+          (string-ref input_string current_number)
+          (string-ref input_string (+ current_number (/ total_length 2))))
+          (+ output (str->number (string-ref input_string current_number))))
+         (else
+          output)
+         ))
+      ((equal?
+        (string-ref input_string current_number)
+        (string-ref input_string (+ current_number (/ total_length 2))))
+       (inverse-captcha2-helper input_string (add1 current_number) total_length (+ output (str->number (string-ref input_string current_number)))))
+      (else
+       (inverse-captcha2-helper input_string (add1 current_number) total_length output))
+      )))
+
+(define inverse-captcha2
+  (λ (input_string)
+    (let ([doubled-string (string-append input_string input_string)]
+          [original_string_length (string-length input_string)])
+      (inverse-captcha2-helper doubled-string 0 original_string_length 0)
+      )))
