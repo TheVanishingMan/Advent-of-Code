@@ -53,7 +53,7 @@ if __name__ == "__main__":
         data = _fh.read().split("\n\n")
 
     cleaned = [
-        {entry.split(":")[0]: entry.split(":")[1] for entry in passport.split()}
+        {k:v for (k,v) in [entry.split(":") for entry in passport.split()]}
         for passport in data
     ]
 
